@@ -207,31 +207,81 @@ public final class ElasticsearchDependenciesJob {
       JavaPairRDD<String, Iterable<Tuple2<String, String>>> t1 = t0.groupBy(pair -> traceId(pair._2));
       List<Tuple2<String, Iterable<Tuple2<String, String>>>> m1 = t1.collect();
       for (Tuple2<String, Iterable<Tuple2<String, String>>> row:m1){
-        log.info("row._1:"+ row._1());
+//        log.info("row._1:"+ row._1());
         Iterator<Tuple2<String, String>> iterator = row._2().iterator();
+        int i =0;
         while (iterator.hasNext()){
           Tuple2<String, String> next = iterator.next();
           String l1 = next._1();
           String l2 = next._2();
-          log.info("l1:"+l1);
-          log.info("l2:"+l2);
+          i++;
+          if (i==1){
+            log.info("l1:"+l1);
+            log.info("l2:"+l2);
+            break;
+          }
         }
       }
       JavaPairRDD<String, DependencyLink> t2 = t1.flatMapValues(new TraceIdAndJsonToDependencyLinks(logInitializer, decoder));
-      log.info("t2:{}"+t2.toDebugString());
+      List<Tuple2<String, DependencyLink>> m2 = t2.collect();
+      log.info("m2 len:",m2.size());
+      for (Tuple2<String, DependencyLink> row:m2){
+        String m21 = row._1();
+        DependencyLink m22 = row._2();
+        log.info("m21:"+m21);
+        log.info("m2:"+m22.toString());
+        break;
+      }
       JavaRDD<DependencyLink> t3 = t2.values();
-      log.info("t3:{}",t3.toDebugString());
+      List<DependencyLink> m3 = t3.collect();
+      for (DependencyLink row:m3){
+        log.info("m3:"+ m3.toString());
+        break;
+      }
       JavaPairRDD<Tuple2<String, String>, DependencyLink> t4 = t3.mapToPair(link -> new Tuple2<>(new Tuple2<>(link.parent, link.child), link));
-      log.info("t4:{}",t4.toDebugString());
+      List<Tuple2<Tuple2<String, String>, DependencyLink>> m4 = t4.collect();
+      log.info("m4 len:",m4.size());
+      for (Tuple2<Tuple2<String, String>, DependencyLink> row:m4){
+        Tuple2<String, String> m31 = row._1();
+        log.info("m31:"+m31.toString());
+        String m32 = m31._1();
+        log.info("m32:"+m32);
+        String m33 = m31._2();
+        log.info("m33:"+m33);
+        DependencyLink m34 = row._2();
+        log.info("m34:" +m34.toString());
+        break;
+      }
       JavaPairRDD<Tuple2<String, String>, DependencyLink> t5 = t4.reduceByKey((l, r) -> DependencyLink.builder().parent(l.parent)
               .child(l.child)
               .callCount(l.callCount + r.callCount)
               .errorCount(l.errorCount + r.errorCount).build());
-      log.info("t5:{}",t5.toDebugString());
+      List<Tuple2<Tuple2<String, String>, DependencyLink>> m5 = t5.collect();
+      log.info("m5 len:" + m5.size());
+      for (Tuple2<Tuple2<String, String>, DependencyLink> row:m5){
+        Tuple2<String, String> m51 = row._1();
+        log.info("m51:"+m51);
+        String m52 = m51._1();
+        log.info("m52:"+m52);
+        String m53 = m51._2();
+        log.info("m53:"+m53);
+        DependencyLink m54 = row._2();
+        log.info("m54:"+m54.toString());
+        break;
+      }
       JavaRDD<DependencyLink> t6 = t5.values();
-      log.info("t6:{}",t6.toDebugString());
+      List<DependencyLink> m6 = t6.collect();
+      log.info("m6 len:"+m6.size());
+      for (DependencyLink row:m6){
+        log.info("m61:"+row.toString());
+      }
       JavaRDD<Map<String, Object>> t7 = t6.map(ElasticsearchDependenciesJob::dependencyLinkJson);
-      log.info("t7:{}", t7);
+      List<Map<String, Object>> m7 = t7.collect();
+      log.info("m7 len:"+m7.size());
+      for (Map<String, Object> row:m7){
+        log.info("m71:"+m7.toString());
+        break;
+      }
 
       JavaRDD<Map<String, Object>> links = JavaEsSpark.esJsonRDD(sc, spanResource)
           .groupBy(pair -> traceId(pair._2))
