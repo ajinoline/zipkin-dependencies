@@ -220,6 +220,7 @@ public final class ElasticsearchDependenciesJob {
         log.info("No spans found at {}", spanResource);
       } else {
         log.info("Saving dependency links to {}", dependencyLinkResource);
+        log.info("Saving links {}", links);
         JavaEsSpark.saveToEs(links, dependencyLinkResource,
             Collections.singletonMap("es.mapping.id", "id")); // allows overwriting the link
       }
