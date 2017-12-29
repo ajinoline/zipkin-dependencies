@@ -202,8 +202,9 @@ public final class ElasticsearchDependenciesJob {
   void run(String spanResource, String dependencyLinkResource, SpanAcceptor decoder) {
     log.info("Processing spans from {}", spanResource);
     JavaSparkContext sc = new JavaSparkContext(conf);
-    log.info("conf:{}",conf);
-    log.info("sc:{}",sc);
+    log.info("conf:{}",conf.toDebugString());
+    log.info("conf:{}",conf.toString());
+    log.info("sc:{}",sc.toString());
     try {
       JavaRDD<Map<String, Object>> links = JavaEsSpark.esJsonRDD(sc, spanResource)
           .groupBy(pair -> traceId(pair._2))
