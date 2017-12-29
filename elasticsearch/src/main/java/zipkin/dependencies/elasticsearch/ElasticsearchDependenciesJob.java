@@ -206,25 +206,21 @@ public final class ElasticsearchDependenciesJob {
       log.info("t0:{}", t0.toDebugString());
       JavaPairRDD<String, Iterable<Tuple2<String, String>>> t1 = t0.groupBy(pair -> traceId(pair._2));
       List<Tuple2<String, Iterable<Tuple2<String, String>>>> m1 = t1.collect();
+      log.info("m1 len:" + m1.size());
       for (Tuple2<String, Iterable<Tuple2<String, String>>> row:m1){
-//        log.info("row._1:"+ row._1());
         Iterator<Tuple2<String, String>> iterator = row._2().iterator();
-        int i =0;
         while (iterator.hasNext()){
           Tuple2<String, String> next = iterator.next();
           String l1 = next._1();
           String l2 = next._2();
-          i++;
-          if (i==1){
             log.info("l1:"+l1);
             log.info("l2:"+l2);
             break;
-          }
         }
       }
       JavaPairRDD<String, DependencyLink> t2 = t1.flatMapValues(new TraceIdAndJsonToDependencyLinks(logInitializer, decoder));
       List<Tuple2<String, DependencyLink>> m2 = t2.collect();
-      log.info("m2 len:",m2.size());
+      log.info("m2 len:"+m2.size());
       for (Tuple2<String, DependencyLink> row:m2){
         String m21 = row._1();
         DependencyLink m22 = row._2();
@@ -234,13 +230,14 @@ public final class ElasticsearchDependenciesJob {
       }
       JavaRDD<DependencyLink> t3 = t2.values();
       List<DependencyLink> m3 = t3.collect();
+      log.info("m3 len:"+m3.size());
       for (DependencyLink row:m3){
-        log.info("m3:"+ m3.toString());
+        log.info("m3:"+ row.toString());
         break;
       }
       JavaPairRDD<Tuple2<String, String>, DependencyLink> t4 = t3.mapToPair(link -> new Tuple2<>(new Tuple2<>(link.parent, link.child), link));
       List<Tuple2<Tuple2<String, String>, DependencyLink>> m4 = t4.collect();
-      log.info("m4 len:",m4.size());
+      log.info("m4 len:"+m4.size());
       for (Tuple2<Tuple2<String, String>, DependencyLink> row:m4){
         Tuple2<String, String> m31 = row._1();
         log.info("m31:"+m31.toString());
