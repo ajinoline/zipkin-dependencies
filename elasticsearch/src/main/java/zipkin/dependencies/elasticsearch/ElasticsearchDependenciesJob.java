@@ -224,6 +224,8 @@ public final class ElasticsearchDependenciesJob {
       } else {
         log.info("Saving dependency links to {}", dependencyLinkResource);
         log.info("Saving links {}", links.toString());
+        log.info("Saving debug links {}", links.toDebugString());
+
         log.info("Saving mapping string {}", Collections.singletonMap("es.mapping.id", "id").toString());
         log.info("Saving mapping {}", Collections.singletonMap("es.mapping.id", "id"));
         JavaEsSpark.saveToEs(links, dependencyLinkResource,
