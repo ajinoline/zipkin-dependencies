@@ -226,7 +226,6 @@ public final class ElasticsearchDependenciesJob {
         DependencyLink m22 = row._2();
         log.info("m21:"+m21);
         log.info("m2:"+m22.toString());
-        break;
       }
       JavaRDD<DependencyLink> t3 = t2.values();
       List<DependencyLink> m3 = t3.collect();
@@ -240,13 +239,13 @@ public final class ElasticsearchDependenciesJob {
       log.info("m4 len:"+m4.size());
       for (Tuple2<Tuple2<String, String>, DependencyLink> row:m4){
         Tuple2<String, String> m31 = row._1();
-        log.info("m31:"+m31.toString());
+        log.info("m41:"+m31.toString());
         String m32 = m31._1();
-        log.info("m32:"+m32);
+        log.info("m42:"+m32);
         String m33 = m31._2();
-        log.info("m33:"+m33);
+        log.info("m43:"+m33);
         DependencyLink m34 = row._2();
-        log.info("m34:" +m34.toString());
+        log.info("m44:" +m34.toString());
         break;
       }
       JavaPairRDD<Tuple2<String, String>, DependencyLink> t5 = t4.reduceByKey((l, r) -> DependencyLink.builder().parent(l.parent)
