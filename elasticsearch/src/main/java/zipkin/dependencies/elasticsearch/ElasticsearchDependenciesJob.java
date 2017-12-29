@@ -276,13 +276,17 @@ public final class ElasticsearchDependenciesJob {
 
   /** returns the lower 64 bits of the trace ID */
   static String traceId(String json) throws IOException {
+    log.info("json string:{}",json);
     JsonReader reader = new JsonReader(new StringReader(json));
     reader.beginObject();
     while (reader.hasNext()) {
       String nextName = reader.nextName();
       if (nextName.equals("traceId")) {
         String traceId = reader.nextString();
-        return traceId.length() > 16 ? traceId.substring(traceId.length() - 16) : traceId;
+        log.info("traceId string:{}",traceId);
+        String ret = traceId.length() > 16 ? traceId.substring(traceId.length() - 16) : traceId;
+        log.info("ret string:{}",ret);
+        return ret;
       } else {
         reader.skipValue();
       }
