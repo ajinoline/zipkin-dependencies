@@ -17,12 +17,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 import javax.annotation.Nullable;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -239,7 +234,12 @@ public final class ElasticsearchDependenciesJob {
               .errorCount(l.errorCount + r.errorCount).build())
           .values()
           .map(ElasticsearchDependenciesJob::dependencyLinkJson);
-
+      List<Map<String, Object>> tmp = links.collect();
+      for (Map<String, Object> row:tmp){
+          log.info("row origin:",row);
+          log.info("row origin2:"+row);
+          log.info("row:", row.toString());
+      }
       if (links.isEmpty()) {
         log.info("No spans found at {}", spanResource);
       } else {
