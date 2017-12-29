@@ -226,6 +226,7 @@ public final class ElasticsearchDependenciesJob {
       log.info("t6:{}",t6.toDebugString());
       JavaRDD<Map<String, Object>> t7 = t6.map(ElasticsearchDependenciesJob::dependencyLinkJson);
       log.info("t7:{}", t7);
+
       JavaRDD<Map<String, Object>> links = JavaEsSpark.esJsonRDD(sc, spanResource)
           .groupBy(pair -> traceId(pair._2))
           .flatMapValues(new TraceIdAndJsonToDependencyLinks(logInitializer, decoder))
@@ -266,6 +267,7 @@ public final class ElasticsearchDependenciesJob {
     result.put("child", l.child);
     result.put("callCount", l.callCount);
     result.put("errorCount", l.errorCount);
+    log.info("result string:{}",result.toString());
     return result;
   }
 
