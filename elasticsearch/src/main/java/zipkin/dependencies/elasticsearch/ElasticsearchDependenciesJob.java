@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import javax.annotation.Nullable;
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.elasticsearch.spark.rdd.api.java.JavaEsSpark;
@@ -206,6 +207,25 @@ public final class ElasticsearchDependenciesJob {
     log.info("conf:{}",conf.toString());
     log.info("sc:{}",sc.toString());
     try {
+      JavaPairRDD<String, String> t0 = JavaEsSpark.esJsonRDD(sc, spanResource);
+      log.info("t0:{}", t0.toDebugString());
+      JavaPairRDD<String, Iterable<Tuple2<String, String>>> t1 = t0.groupBy(pair -> traceId(pair._2));
+      log.info("t1:{}", t1.toDebugString());
+      JavaPairRDD<String, DependencyLink> t2 = t1.flatMapValues(new TraceIdAndJsonToDependencyLinks(logInitializer, decoder));
+      log.info("t2:{}"+t2.toDebugString());
+      JavaRDD<DependencyLink> t3 = t2.values();
+      log.info("t3:{}",t3.toDebugString());
+      JavaPairRDD<Tuple2<String, String>, DependencyLink> t4 = t3.mapToPair(link -> new Tuple2<>(new Tuple2<>(link.parent, link.child), link));
+      log.info("t4:{}",t4.toDebugString());
+      JavaPairRDD<Tuple2<String, String>, DependencyLink> t5 = t4.reduceByKey((l, r) -> DependencyLink.builder().parent(l.parent)
+              .child(l.child)
+              .callCount(l.callCount + r.callCount)
+              .errorCount(l.errorCount + r.errorCount).build());
+      log.info("t5:{}",t5.toDebugString());
+      JavaRDD<DependencyLink> t6 = t5.values();
+      log.info("t6:{}",t6.toDebugString());
+      JavaRDD<Map<String, Object>> t7 = t6.map(ElasticsearchDependenciesJob::dependencyLinkJson);
+      log.info("t7:{}", t7);
       JavaRDD<Map<String, Object>> links = JavaEsSpark.esJsonRDD(sc, spanResource)
           .groupBy(pair -> traceId(pair._2))
           .flatMapValues(new TraceIdAndJsonToDependencyLinks(logInitializer, decoder))
@@ -223,7 +243,6 @@ public final class ElasticsearchDependenciesJob {
         log.info("No spans found at {}", spanResource);
       } else {
         log.info("Saving dependency links to {}", dependencyLinkResource);
-        log.info("Saving links {}", links.toString());
         log.info("Saving debug links {}", links.toDebugString());
 
         log.info("Saving mapping string {}", Collections.singletonMap("es.mapping.id", "id").toString());
