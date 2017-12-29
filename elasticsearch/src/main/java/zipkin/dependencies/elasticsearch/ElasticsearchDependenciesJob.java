@@ -205,7 +205,18 @@ public final class ElasticsearchDependenciesJob {
       JavaPairRDD<String, String> t0 = JavaEsSpark.esJsonRDD(sc, spanResource);
       log.info("t0:{}", t0.toDebugString());
       JavaPairRDD<String, Iterable<Tuple2<String, String>>> t1 = t0.groupBy(pair -> traceId(pair._2));
-      log.info("t1:{}", t1.toDebugString());
+      List<Tuple2<String, Iterable<Tuple2<String, String>>>> m1 = t1.collect();
+      for (Tuple2<String, Iterable<Tuple2<String, String>>> row:m1){
+        log.info("row._1:"+ row._1());
+        Iterator<Tuple2<String, String>> iterator = row._2().iterator();
+        while (iterator.hasNext()){
+          Tuple2<String, String> next = iterator.next();
+          String l1 = next._1();
+          String l2 = next._2();
+          log.info("l1:"+l1);
+          log.info("l2:"+l2);
+        }
+      }
       JavaPairRDD<String, DependencyLink> t2 = t1.flatMapValues(new TraceIdAndJsonToDependencyLinks(logInitializer, decoder));
       log.info("t2:{}"+t2.toDebugString());
       JavaRDD<DependencyLink> t3 = t2.values();
