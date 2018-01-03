@@ -219,14 +219,13 @@ public final class ElasticsearchDependenciesJob {
         }
       }
 
+      log.info("TraceIdAndJsonToDependencyLinks logInitializer:" + logInitializer.toString());
+      log.info("TraceIdAndJsonToDependencyLinks decoder:" + decoder.toString());
       TraceIdAndJsonToDependencyLinks unkonw = new TraceIdAndJsonToDependencyLinks(logInitializer, decoder);
-      log.warn("TraceIdAndJsonToDependencyLinks logInitializer:" + logInitializer.toString());
-      log.warn("TraceIdAndJsonToDependencyLinks decoder:" + decoder.toString());
-      log.warn("TraceIdAndJsonToDependencyLinks unkonw:" + unkonw.toString());
-
-      log.warn("TraceIdAndJsonToDependencyLinks2 logInitializer:" + logInitializer);
-      log.warn("TraceIdAndJsonToDependencyLinks2 decoder:" + decoder);
-      log.warn("TraceIdAndJsonToDependencyLinks2 unkonw:" + unkonw);
+      log.info("TraceIdAndJsonToDependencyLinks unkonw:" + unkonw.toString());
+      log.info("TraceIdAndJsonToDependencyLinks2 logInitializer:" + logInitializer);
+      log.info("TraceIdAndJsonToDependencyLinks2 decoder:" + decoder);
+      log.info("TraceIdAndJsonToDependencyLinks2 unkonw:" + unkonw);
 
       JavaPairRDD<String, DependencyLink> t2 = t1.flatMapValues(new TraceIdAndJsonToDependencyLinks(logInitializer, decoder));
       List<Tuple2<String, DependencyLink>> m2 = t2.collect();
