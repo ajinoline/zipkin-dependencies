@@ -16,6 +16,8 @@ package zipkin.dependencies.mysql;
 import java.util.Iterator;
 import javax.annotation.Nullable;
 import org.apache.spark.sql.Row;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import zipkin.BinaryAnnotation;
 import zipkin.Constants;
 import zipkin.internal.PeekingIterator;
@@ -38,7 +40,9 @@ import static zipkin.internal.Util.toLowerHex;
  * <p>Out-of-date schemas may be missing the trace_id_high field. When present, the {@link
  * Span#traceId()} could be 32 characters in logging statements.
  */
+
 final class DependencyLinkSpanIterator implements Iterator<Span> {
+  private static final Logger log = LoggerFactory.getLogger(DependencyLinkSpanIterator.class);
 
   /** Assumes the input records are sorted by trace id, span id */
   static final class ByTraceId implements Iterator<Iterator<Span>> {
@@ -103,9 +107,13 @@ final class DependencyLinkSpanIterator implements Iterator<Span> {
         break; // if we are in a new span
       }
       Row next = delegate.next(); // row for the same span
+      log.info("traceIdIndex info:"+traceIdIndex);
+      log.info("delegate body:"+delegate.toString());
 
       String key = emptyToNull(row, traceIdIndex + 3); // a_key
       String value = emptyToNull(row, traceIdIndex + 4); // a_service_name
+      log.info("key:"+key);
+      log.info("value:"+value);
       if (key == null || value == null) continue; // neither client nor server
       switch (key) {
         case CLIENT_ADDR:
@@ -134,6 +142,9 @@ final class DependencyLinkSpanIterator implements Iterator<Span> {
     if (equal(saService, caService)) caService = null;
 
     Long parentId = row.isNullAt(traceIdIndex + 1) ? null : row.getLong(traceIdIndex + 1);
+    log.warn("parentId info:"+parentId);
+    log.warn("traceIdHi info:"+traceIdHi);
+    log.warn("spanId info:"+spanId);
     Span.Builder result = Span.newBuilder()
         .traceId(toLowerHex(traceIdHi != null ? traceIdHi : 0L, traceIdLo))
         .parentId(parentId != null ? toLowerHex(parentId) : null)
@@ -142,6 +153,7 @@ final class DependencyLinkSpanIterator implements Iterator<Span> {
     if (error) {
       result.putTag(Constants.ERROR, "" /* actual value doesn't matter */);
     }
+
 
     if (srService != null) {
       return result.kind(Span.Kind.SERVER)
