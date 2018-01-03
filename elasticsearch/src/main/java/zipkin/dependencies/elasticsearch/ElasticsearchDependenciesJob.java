@@ -218,6 +218,16 @@ public final class ElasticsearchDependenciesJob {
             break;
         }
       }
+
+      TraceIdAndJsonToDependencyLinks unkonw = new TraceIdAndJsonToDependencyLinks(logInitializer, decoder);
+      log.warn("TraceIdAndJsonToDependencyLinks logInitializer:" + logInitializer.toString());
+      log.warn("TraceIdAndJsonToDependencyLinks decoder:" + decoder.toString());
+      log.warn("TraceIdAndJsonToDependencyLinks unkonw:" + unkonw.toString());
+
+      log.warn("TraceIdAndJsonToDependencyLinks2 logInitializer:" + logInitializer);
+      log.warn("TraceIdAndJsonToDependencyLinks2 decoder:" + decoder);
+      log.warn("TraceIdAndJsonToDependencyLinks2 unkonw:" + unkonw);
+
       JavaPairRDD<String, DependencyLink> t2 = t1.flatMapValues(new TraceIdAndJsonToDependencyLinks(logInitializer, decoder));
       List<Tuple2<String, DependencyLink>> m2 = t2.collect();
       log.info("m2 len:"+m2.size());
