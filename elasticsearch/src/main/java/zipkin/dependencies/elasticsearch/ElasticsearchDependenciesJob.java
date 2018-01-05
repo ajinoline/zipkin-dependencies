@@ -226,6 +226,7 @@ public final class ElasticsearchDependenciesJob {
       log.warn("TraceIdAndJsonToDependencyLinks2 decoder:" + decoder);
 
       TraceIdAndJsonToDependencyLinks unkonw = new TraceIdAndJsonToDependencyLinks(logInitializer, decoder);
+
       log.warn("TraceIdAndJsonToDependencyLinks unkonw:" + unkonw.toString());
       log.warn("TraceIdAndJsonToDependencyLinks2 unkonw:" + unkonw);
 
@@ -316,6 +317,13 @@ public final class ElasticsearchDependenciesJob {
 
         log.info("Saving mapping string {}", Collections.singletonMap("es.mapping.id", "id").toString());
         log.info("Saving mapping {}", Collections.singletonMap("es.mapping.id", "id"));
+        List<Map<String, Object>> re_link = links.collect();
+        for (Map<String,Object> row:re_link){
+          log.info("re_link info:"+row.toString());
+        }
+        Map<String, String> re_sing = Collections.singletonMap("es.mapping.id", "id");
+        log.info("dependencyLinkResource info:"+dependencyLinkResource.toString());
+        log.info("re_sing info:"+re_sing.toString());
         JavaEsSpark.saveToEs(links, dependencyLinkResource,
             Collections.singletonMap("es.mapping.id", "id")); // allows overwriting the link
       }
