@@ -13,10 +13,7 @@
  */
 package zipkin.dependencies.elasticsearch;
 
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import javax.annotation.Nullable;
 import org.apache.spark.api.java.function.Function;
 import org.slf4j.Logger;
@@ -37,15 +34,27 @@ final class TraceIdAndJsonToDependencyLinks implements Serializable,
   final SpanAcceptor decoder;
 
   TraceIdAndJsonToDependencyLinks(Runnable logInitializer, SpanAcceptor decoder) {
+    log.info("TraceIdAndJsonToDependencyLinks info...");
     this.logInitializer = logInitializer;
     this.decoder = decoder;
   }
 
   @Override public Iterable<DependencyLink> call(Iterable<Tuple2<String, String>> traceIdJson) {
     if (logInitializer != null) logInitializer.run();
+
     Set<Span> sameTraceId = new LinkedHashSet<>();
     for (Tuple2<String, String> row : traceIdJson) {
       try {
+        String key = row._1();
+        String value = row._2();
+        log.info("call key:"+key);
+        log.info("call value:"+value);
+        Iterator<Span> iterator = sameTraceId.iterator();
+        while (iterator.hasNext()){
+          log.info("span info:"+iterator.next());
+        }
+        log.info("row._2:" + row._2);
+        log.info("sameTraceId:" + sameTraceId);
         decoder.decodeInto(row._2, sameTraceId);
       } catch (Exception e) {
         log.warn("Unable to decode span from traces where trace_id=" + row._1, e);

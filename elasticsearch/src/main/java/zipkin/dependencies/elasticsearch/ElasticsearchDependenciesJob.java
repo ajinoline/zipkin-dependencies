@@ -207,17 +207,17 @@ public final class ElasticsearchDependenciesJob {
       JavaPairRDD<String, Iterable<Tuple2<String, String>>> t1 = t0.groupBy(pair -> traceId(pair._2));
       List<Tuple2<String, Iterable<Tuple2<String, String>>>> m1 = t1.collect();
       log.info("m1 len:" + m1.size());
-      for (Tuple2<String, Iterable<Tuple2<String, String>>> row:m1){
-        Iterator<Tuple2<String, String>> iterator = row._2().iterator();
-        while (iterator.hasNext()){
-          Tuple2<String, String> next = iterator.next();
-          String l1 = next._1();
-          String l2 = next._2();
-            log.info("l1:"+l1);
-            log.info("l2:"+l2);
-            break;
-        }
-      }
+//      for (Tuple2<String, Iterable<Tuple2<String, String>>> row:m1){
+//        Iterator<Tuple2<String, String>> iterator = row._2().iterator();
+//        while (iterator.hasNext()){
+//          Tuple2<String, String> next = iterator.next();
+//          String l1 = next._1();
+//          String l2 = next._2();
+//            log.info("l1:"+l1);
+//            log.info("l2:"+l2);
+//            break;
+//        }
+//      }
       log.warn("TraceIdAndJsonToDependencyLinks logInitializer:" + logInitializer.toString());
       log.warn("TraceIdAndJsonToDependencyLinks decoder:" + decoder.toString());
       log.warn("TraceIdAndJsonToDependencyLinks2 logInitializer:" + logInitializer);
