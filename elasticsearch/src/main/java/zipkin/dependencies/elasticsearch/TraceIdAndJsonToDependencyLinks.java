@@ -49,10 +49,12 @@ final class TraceIdAndJsonToDependencyLinks implements Serializable,
         String value = row._2();
         log.info("call key:"+key);
         log.info("call value:"+value);
-        Iterator<Span> iterator = sameTraceId.iterator();
-        while (iterator.hasNext()){
-          log.info("span info:"+iterator.next());
-        }
+//        Iterator<Span> iterator = sameTraceId.iterator();
+//        while (iterator.hasNext()){
+//          log.info("span info:"+iterator.next());
+//
+//        }
+        log.info("row._1:" + row._1);
         log.info("row._2:" + row._2);
         log.info("sameTraceId:" + sameTraceId);
         decoder.decodeInto(row._2, sameTraceId);

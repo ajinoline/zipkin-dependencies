@@ -155,7 +155,9 @@ public final class ElasticsearchDependenciesJob {
     for (Map.Entry<String, String> entry : builder.sparkProperties.entrySet()) {
       conf.set(entry.getKey(), entry.getValue());
     }
+    log.info("ElasticsearchDependenciesJob builder conf:"+conf.toDebugString());
     this.logInitializer = builder.logInitializer;
+    log.info("this.logInitializer:"+this.logInitializer);
   }
 
   public void run() {
