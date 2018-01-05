@@ -69,8 +69,6 @@ final class TraceIdAndJsonToDependencyLinks implements Serializable,
     }
     DependencyLinker linker = new DependencyLinker();
     linker.putTrace(sameTraceId.iterator());
-    log.info("linker.toString:" + linker.toString());
-    log.info("linker.link():" + linker.link().toString());
     return linker.link();
   }
 }
