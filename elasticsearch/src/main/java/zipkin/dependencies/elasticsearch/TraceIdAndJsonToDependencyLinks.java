@@ -47,7 +47,7 @@ final class TraceIdAndJsonToDependencyLinks implements Serializable,
     for (Tuple2<String, String> row : traceIdJson) {
       i++;
       try {
-        if (i%5000==1){
+        if (i==1){
           String key = row._1();
           String value = row._2();
           log.info("call key:"+key);
